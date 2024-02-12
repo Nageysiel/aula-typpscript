@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerar QR Code</title>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+</head>
+<body>
+    <h1>Gerador de QR Code</h1>
+    <label for="urlInput">Insira o URL:</label>
+    <input type="text" id="urlInput" placeholder="https://www.example.com">
+    <button id="generateButton">Gerar QR Code</button>
+    <div id="qrcode"></div>
+    
+    <script>
+        document.getElementById("generateButton").addEventListener("click", function() {
+            var url = document.getElementById("urlInput").value;
+            if (url) {
+                var qrcode = new QRCode(document.getElementById("qrcode"), {
+                    text: url,
+                    width: 128,
+                    height: 128,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff"
+                });
+            } else {
+                alert("Por favor, insira um URL válido.");
+            }
+        });
+    </script>
+</body>
+</html>

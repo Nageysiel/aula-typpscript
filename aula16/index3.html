@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerar e Salvar QR Code como SVG</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-svg/1.0.3/qrcode.min.js"></script>
+</head>
+<body>
+    <h1>Gerador de QR Code SVG</h1>
+    <label for="linkInput">Insira o link:</label>
+    <input type="text" id="linkInput" placeholder="https://www.example.com">
+    <button id="generateButton">Gerar QR Code SVG</button>
+    <button id="saveButton" disabled>Salvar como SVG</button>
+    <div id="qrcode"></div>
+    
+    <script>
+        document.getElementById("generateButton").addEventListener("click", function() {
+            var link = document.getElementById("linkInput").value;
+            if (link) {
+                var qrcode = new QRCode(document.getElementById("qrcode"), {
+                    content: link,
+                    join: true, // Opcionais, para tornar o SVG mais otimizado
+                    container: "svg-viewbox" // ID do elemento SVG onde o QR code será gerado
+                });
+                document.getElementById("saveButton").removeAttribute("disabled");
+            } else {
+                alert("Por favor, insira um link válido.");
+            }
+        });
+
+        document.getElementById("saveButton").addEventListener("click", function() {
+            var svgElement = document.getElementById("svg-viewbox");
+            var svgString = new XMLSerializer().serializeToString(svgElement);
+            var blob = new Blob([svgString], { type: "image/svg+xml" });
+
+            var a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "qrcode.svg";
+            a.click();
+        });
+    </script>
+</body>
+</html>
+

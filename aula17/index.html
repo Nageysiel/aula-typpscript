@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leitor de PDF</title>
+    <!-- Inclua os scripts da biblioteca PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+</head>
+<body>
+    <h1>Leitor de PDF</h1>
+    <canvas id="pdfCanvas"></canvas>
+    <button id="prevPage">Página Anterior</button>
+    <button id="nextPage">Próxima Página</button>
+
+    <input type="file" id="fileInput" accept=".pdf">
+    <button id="loadButton">Carregar PDF</button>
+
+    <script>
+        // Variáveis para controle
+        let pdfDoc = null;
+        let pageNum = 1;
+        const scale = 1.5;
+
+        // Elementos do DOM
+        const canvas = document.getElementById('pdfCanvas');
+        const prevPageButton = document.getElementById('prevPage');
+        const nextPageButton = document.getElementById('nextPage');
+
+        // Função para carregar o PDF
+        const renderPage = (num) => {
+            pdfDoc.getPage(num).then(page => {
+                const viewport = page.getViewport({ scale });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                const renderContext = {
+                    canvasContext: canvas.getContext('2d'),
+                    viewport
+                };
+
+                page.render(renderContext);
+            });
+
+            // Atualizar número da página
+            pageNum = num;
+        };
+
+        // Carregar o PDF
+        pdfjsLib.getDocument('seu_arquivo.pdf').promise.then(pdfDocument => {
+            pdfDoc = pdfDocument;
+            renderPage(pageNum);
+
+            // Event listeners dos botões
+            prevPageButton.addEventListener('click', () => {
+                if (pageNum <= 1) return;
+                renderPage(pageNum - 1);
+            });
+
+            nextPageButton.addEventListener('click', () => {
+                if (pageNum >= pdfDoc.numPages) return;
+                renderPage(pageNum + 1);
+            });
+        }).catch(error => {
+            console.error('Erro ao carregar o PDF:', error);
+        });
+
+    // Elementos do DOM
+    const fileInput = document.getElementById('fileInput');
+    const loadButton = document.getElementById('loadButton');
+
+    // Função para carregar o PDF do input de arquivo
+    const loadPDF = (file) => {
+        const fileReader = new FileReader();
+
+        fileReader.onload = () => {
+            const pdfData = new Uint8Array(fileReader.result);
+            pdfjsLib.getDocument(pdfData).promise.then(pdfDocument => {
+                pdfDoc = pdfDocument;
+                renderPage(pageNum);
+            }).catch(error => {
+                console.error('Erro ao carregar o PDF:', error);
+            });
+        };
+
+        fileReader.readAsArrayBuffer(file);
+    };
+
+    // Event listener para o botão de carregar PDF
+    loadButton.addEventListener('click', () => {
+        const selectedFile = fileInput.files[0];
+        if (selectedFile) {
+            loadPDF(selectedFile);
+        }
+    });
+
+
+    </script>
+</body>
+</html>
